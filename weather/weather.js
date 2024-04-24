@@ -11,6 +11,7 @@ const settings = {
 
 const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${settings.lat}&longitude=${settings.lon}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=1`;
 
+// Calculates the interval to check for weather updates
 const time =
   settings.interval.minutes * 60 * 1000 + settings.interval.seconds * 1000;
 

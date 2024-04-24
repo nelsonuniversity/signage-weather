@@ -1,0 +1,92 @@
+body {
+	margin: 5px 5px 5px 5px;
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.parent {
+	display: grid;
+	/* grid-template-columns: 100px 200px;
+	grid-template-rows: 100px 100px; */
+	grid-column-gap: 10px;
+	grid-row-gap: 0px;
+
+	grid-template-rows: 100px;
+	grid-template-columns: auto 100px auto;
+	width: 300px;
+	/* width: 100px; */
+}
+
+.div1 {
+	/* grid-area: 1 / 1 / 2 / 2; */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.div2 {
+	/* grid-area: 1 / 2 / 2 / 3; */
+
+	display: flex;
+	align-items: center;
+	justify-content: left;
+}
+
+/* 
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas: "WeatherIcon CurrentTemp CurrentTemp" "WeatherIcon CurrentTemp CurrentTemp" "WeatherCondition MinTemp MaxTemp";
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+}*/
+
+.WeatherIcon {
+	/* grid-area: WeatherIcon; */
+	/* max-width: 100px;
+	height: 100px; */
+
+	font-size: 70px;
+	line-height: 100px;
+	color: white;
+}
+
+.CurrentTemp {
+	grid-area: CurrentTemp;
+	font-size: 4em;
+}
+
+.WeatherCondition {
+	grid-area: WeatherCondition;
+	font-size: 2em;
+}
+
+.WeatherInfo {
+	padding: 5px;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	font-family: "proxima nova", Inter, Montserrat, sans-serif;
+	font-weight: 600;
+	border-radius: 5px;
+}
+
+.Dark {
+	/* background-color: #000000b2; */
+	color: white;
+}
+
+.Light {
+	background-color: rgba(255, 255, 255, 0.7);
+	color: black;
+}
+
+/* Code generated with https://grid.layoutit.com/ */
+
+/* @font-face {
+  font-family: Metropolis;
+  font-style: normal;
+  font-weight: 300;
+  src: local("Segoe UI"),local("Roboto"),local("Ubuntu");
+} */
