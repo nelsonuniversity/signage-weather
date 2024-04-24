@@ -1,199 +1,368 @@
 const settings = {
   interval: {
-    minutes: 3,
-    seconds: 0
+    minutes: 5,
+    seconds: 0,
   },
-  place: "Waxahachie,us",
+  lat: "32.4068",
+  lon: "-96.8535",
   units: "imperial",
   unitsSymbol: "°F",
-  lang: "",
-  showPlace: "on",
-  fullDescription: "on"
 };
 
+const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${settings.lat}&longitude=${settings.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&forecast_days=1`;
+
+let currentCode = null;
+
+// Calculates the interval to check for weather updates
 const time =
   settings.interval.minutes * 60 * 1000 + settings.interval.seconds * 1000;
-// setInterval("window.location.reload()", time);
-// setInterval("PlaceData()", time);
 
-var lastCondition = {
-  icon: "",
-  condition: "",
-  current: "",
-  min: "",
-  max: ""
-};
-var placeCoordinates = {
-  lat: "",
-  lon: ""
-};
-$(document).ready(function () {
-  var parameters = new URL(window.location.href).searchParams;
-  console.log(parameters);
-  var API_key = parameters.get("api_key");
+function isDay(weatherData) {
+  return weatherData.current.is_day === 1;
+}
 
-  $(".WeatherInfo").addClass("Dark");
+function getDayNight(weatherData) {
+  return isDay(weatherData) ? "day" : "night";
+}
 
-  var minMaxText = parameters.get("min-max_text");
-  var nextMin = parameters.get("next-min");
-  var tempMin;
-  var tempMax;
-  var midday = GetMidday();
-  if (parameters.get("lat")) {
-    placeCoordinates.lat = parameters.get("lat");
-    placeCoordinates.lon = parameters.get("lon");
-  }
+function getWeatherCode(weatherData) {
+  return weatherData.current.weather_code;
+}
 
-  function PlaceData() {
-    let params = {};
-    if (placeCoordinates.lat) {
-      params = {
-        lat: placeCoordinates.lat,
-        lon: placeCoordinates.lon,
-        appid: API_key
-      };
-    } else {
-      params = {
-        q: settings.place,
-        APPID: API_key,
-        units: settings.units,
-        lang: settings.lang
-      };
+function getWeatherIcon(weatherData) {
+  const dayNight = getDayNight(weatherData);
+
+  return `wi wi-${dayNight}-${dayNight === "night" ? "alt-" : ""}${
+    codes[getWeatherCode(weatherData)][dayNight].icon
+  }`;
+}
+
+async function fetchWeatherData() {
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
     }
-    $.ajax({
-      url: "https://api.openweathermap.org/data/2.5/weather",
-      data: params,
-      type: "GET",
-      dataType: "json"
-    })
-      .done(function (json) {
-        placeCoordinates = json.coord;
-        if (settings.showPlace === "on") {
-          $("#PlaceName").text(json.name);
-        }
-        CurrentData();
-      })
-      .fail(function (jqXHR) {
-        let status = jqXHR.status;
-        console.log(jqXHR.responseText);
-        if (status == 401) {
-          $(".CurrentTemp").text("Bad API key.");
-        } else if (status == 404) {
-          $(".CurrentTemp").text("City not found.");
-        } else if (status == 408) {
-          $(".CurrentTemp").text(
-            "Response timeout. Check your internet connection."
-          );
-        } else if (status == 418) {
-          console.log("The mythical taepot has been found.");
-          $(".CurrentTemp").text("TEAPOT");
-        } else if (status == 500) {
-          $(".CurrentTemp").text(
-            "Internal server (OpenWeather) error (500)\nContact website mantainer."
-          );
-        } else if (status == 502) {
-          $(".CurrentTemp").text("Bad Gateway\n Try again later.");
-        } else if (status == 503) {
-          $(".CurrentTemp").text(
-            "OpenWeather service unavailable.\n Try again later."
-          );
-        } else {
-          $(".CurrentTemp").text(
-            "Error " + status + "\nCheck console for more info"
-          );
-        }
-      });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching weather data:", error);
+    return null;
   }
+}
 
-  function GetMidday() {
-    let timeValue = new Date();
-    timeValue.setHours(12, 0, 0, 0);
-    return timeValue.getTime();
+async function getWeather() {
+  try {
+    const weatherData = await fetchWeatherData();
+    updateTemperature(weatherData.current.temperature_2m);
+    await updateIcon(weatherData);
+  } catch (error) {
+    console.error("Error:", error);
   }
+}
 
-  function CurrentData() {
-    $.ajax({
-      url: "https://api.openweathermap.org/data/2.5/onecall",
-      data: {
-        lat: placeCoordinates.lat,
-        lon: placeCoordinates.lon,
-        APPID: API_key,
-        units: settings.units,
-        lang: settings.lang
-      },
-      type: "GET",
-      dataType: "json"
-    })
-      .done(function (json) {
-        console.log(json);
-        let condition_type = "";
-        if (settings.fullDescription === "on") {
-          condition_type = json.current.weather[0].description;
-        } else {
-          condition_type = json.current.weather[0].main;
-        }
-        // if (json.current.weather[0].icon !== lastCondition.icon) {
-        // 	$("#icon").attr(
-        // 		"src",
-        // 		"https://openweathermap.org/img/wn/" +
-        // 			json.current.weather[0].icon +
-        // 			"@2x.png"
-        // 	);
-        // 	lastCondition.icon = json.current.weather[0].icon;
-        // }
-
-        // if (json.current.weather[0].icon !== lastCondition.icon) {
-        $("#icon").attr(
-          "class",
-          "WeatherIcon wi wi-owm-" + json.current.weather[0].id
-        );
-        lastCondition.icon = json.current.weather[0].icon;
-        // }
-        if (condition_type !== lastCondition.condition) {
-          $(".WeatherCondition").text(condition_type);
-          lastCondition.condition = condition_type;
-        }
-        if (json.current.temp !== lastCondition.current) {
-          $(".CurrentTemp").text(
-            Math.round(json.current.temp) + settings.unitsSymbol
-          );
-          lastCondition.current = json.current.temp;
-        }
-        if (Date.now() > midday + 43200000 || lastCondition.min === "") {
-          /*
-				The "midday" value indicates the current day's midday time in epoch, obtained with the function GetMidday().
-				We compare this value and the current time to check if a day has passed.
-				Here, we also check the nextMin boolean and change the values acordingly.
-				*/
-          if (nextMin == "on") {
-            tempMin = json.daily[1].temp.min;
-          } else {
-            tempMin = json.daily[0].temp.min;
-          }
-          tempMax = json.daily[0].temp.max;
-
-          if (minMaxText == "on") {
-            $(".MinTemp").text(
-              "Min " + Math.round(tempMin) + settings.unitsSymbol
-            );
-            $(".MaxTemp").text(
-              "Max " + Math.round(tempMax) + settings.unitsSymbol
-            );
-          } else {
-            $(".MinTemp").text(Math.round(tempMin) + settings.unitsSymbol);
-            $(".MaxTemp").text(Math.round(tempMax) + settings.unitsSymbol);
-          }
-          lastCondition.min = tempMin;
-          lastCondition.max = tempMax;
-          midday = GetMidday();
-        }
-      })
-      .always(function () {
-        setTimeout(CurrentData, time);
-      });
+async function updateIcon(weatherData) {
+  if (currentCode !== null || currentCode === getWeatherCode(weatherData)) {
+    return;
   }
+  const iconDiv = document.getElementById("icon");
+  iconDiv
+    ? (iconDiv.className = getWeatherIcon(weatherData))
+    : console.error(`Icon div not found.`);
+}
 
-  PlaceData();
+function updateTemperature(temperature) {
+  const tempSpan = document.querySelector(".temp");
+  tempSpan
+    ? (tempSpan.textContent = `${Math.round(temperature, 0)}°`)
+    : console.error("temp span not found.");
+}
 
-  // setInterval(PlaceData, time);
-});
+getWeather();
+// Call the function to get weather data
+setInterval(getWeather, time);
+
+// Descriptions taken from https://gist.github.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c
+const codes = {
+  0: {
+    day: {
+      description: "Sunny",
+      icon: "sunny",
+    },
+    night: {
+      description: "Clear",
+      icon: "clear",
+    },
+  },
+  1: {
+    day: {
+      description: "Mainly Sunny",
+      icon: "cloudy-high",
+    },
+    night: {
+      description: "Mainly Clear",
+      icon: "cloudy-high",
+    },
+  },
+  2: {
+    day: {
+      description: "Partly Cloudy",
+      icon: "cloudy",
+    },
+    night: {
+      description: "Partly Cloudy",
+      icon: "cloudy",
+    },
+  },
+  3: {
+    day: {
+      description: "Cloudy",
+      icon: "cloudy",
+    },
+    night: {
+      description: "Cloudy",
+      icon: "cloudy",
+    },
+  },
+  45: {
+    day: {
+      description: "Foggy",
+      icon: "fog",
+    },
+    night: {
+      description: "Foggy",
+      icon: "fog",
+    },
+  },
+  48: {
+    day: {
+      description: "Rime Fog",
+      icon: "fog",
+    },
+    night: {
+      description: "Rime Fog",
+      icon: "fog",
+    },
+  },
+  51: {
+    day: {
+      description: "Light Drizzle",
+      icon: "sprinkle",
+    },
+    night: {
+      description: "Light Drizzle",
+      icon: "sprinkle",
+    },
+  },
+  53: {
+    day: {
+      description: "Drizzle",
+      icon: "sprinkle",
+    },
+    night: {
+      description: "Drizzle",
+      icon: "sprinkle",
+    },
+  },
+  55: {
+    day: {
+      description: "Heavy Drizzle",
+      icon: "sprinkle",
+    },
+    night: {
+      description: "Heavy Drizzle",
+      icon: "sprinkle",
+    },
+  },
+  56: {
+    day: {
+      description: "Light Freezing Drizzle",
+      icon: "rain-mix",
+    },
+    night: {
+      description: "Light Freezing Drizzle",
+      icon: "rain-mix",
+    },
+  },
+  57: {
+    day: {
+      description: "Freezing Drizzle",
+      icon: "rain-mix",
+    },
+    night: {
+      description: "Freezing Drizzle",
+      icon: "rain-mix",
+    },
+  },
+  61: {
+    day: {
+      description: "Light Rain",
+      icon: "rain",
+    },
+    night: {
+      description: "Light Rain",
+      icon: "rain",
+    },
+  },
+  63: {
+    day: {
+      description: "Rain",
+      icon: "rain",
+    },
+    night: {
+      description: "Rain",
+      icon: "rain",
+    },
+  },
+  65: {
+    day: {
+      description: "Heavy Rain",
+      icon: "showers",
+    },
+    night: {
+      description: "Heavy Rain",
+      icon: "showers",
+    },
+  },
+  66: {
+    day: {
+      description: "Light Freezing Rain",
+      icon: "sleet",
+    },
+    night: {
+      description: "Light Freezing Rain",
+      icon: "sleet",
+    },
+  },
+  67: {
+    day: {
+      description: "Freezing Rain",
+      icon: "sleet",
+    },
+    night: {
+      description: "Freezing Rain",
+      icon: "sleet",
+    },
+  },
+  71: {
+    day: {
+      description: "Light Snow",
+      icon: "snow",
+    },
+    night: {
+      description: "Light Snow",
+      icon: "snow",
+    },
+  },
+  73: {
+    day: {
+      description: "Snow",
+      icon: "snow",
+    },
+    night: {
+      description: "Snow",
+      icon: "snow",
+    },
+  },
+  75: {
+    day: {
+      description: "Heavy Snow",
+      icon: "snow",
+    },
+    night: {
+      description: "Heavy Snow",
+      icon: "snow",
+    },
+  },
+  77: {
+    day: {
+      description: "Snow Grains",
+      icon: "snow",
+    },
+    night: {
+      description: "Snow Grains",
+      icon: "snow",
+    },
+  },
+  80: {
+    day: {
+      description: "Light Showers",
+      icon: "showers",
+    },
+    night: {
+      description: "Light Showers",
+      icon: "showers",
+    },
+  },
+  81: {
+    day: {
+      description: "Showers",
+      icon: "showers",
+    },
+    night: {
+      description: "Showers",
+      icon: "showers",
+    },
+  },
+  82: {
+    day: {
+      description: "Heavy Showers",
+      icon: "storm-showers",
+    },
+    night: {
+      description: "Heavy Showers",
+      icon: "storm-showers",
+    },
+  },
+  85: {
+    day: {
+      description: "Light Snow Showers",
+      icon: "snow",
+    },
+    night: {
+      description: "Light Snow Showers",
+      icon: "snow",
+    },
+  },
+  86: {
+    day: {
+      description: "Snow Showers",
+      icon: "snow",
+    },
+    night: {
+      description: "Snow Showers",
+      icon: "snow",
+    },
+  },
+  95: {
+    day: {
+      description: "Thunderstorm",
+      icon: "thunderstorm",
+    },
+    night: {
+      description: "Thunderstorm",
+      icon: "thunderstorm",
+    },
+  },
+  96: {
+    day: {
+      description: "Light Thunderstorms With Hail",
+      icon: "hail",
+    },
+    night: {
+      description: "Light Thunderstorms With Hail",
+      icon: "hail",
+    },
+  },
+  99: {
+    day: {
+      description: "Thunderstorm With Hail",
+      icon: "hail",
+    },
+    night: {
+      description: "Thunderstorm With Hail",
+      icon: "hail",
+    },
+  },
+};
