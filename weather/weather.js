@@ -1,6 +1,6 @@
 const settings = {
   interval: {
-    minutes: 15,
+    minutes: 5,
     seconds: 0,
   },
   lat: "32.4068",
