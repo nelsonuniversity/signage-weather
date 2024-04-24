@@ -3,12 +3,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <link href="css/style.css" rel="stylesheet" />
+    <link
+      href="css/weather-icons-master/css/weather-icons.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
     <title>Weather</title>
   </head>
   <body>
     <div class="flexbox">
-      <div class="icon"></div>
-      <div class="temp">70°F</div>
+      <div id="iconBox">
+        <i id="icon" class="wi-night-alt-snow-wind"></i>
+      </div>
+      <div id="tempBox"><span class="temp"></span></div>
     </div>
+    <script src="weather.js"></script>
   </body>
 </html>

@@ -1,0 +1,35 @@
+body {
+  background-color: rgba(0, 0, 0, 0);
+  /* background-color: black; */
+  color: white;
+}
+
+.flexbox {
+  display: flex;
+  align-items: flex-start;
+  max-height: 70px;
+}
+
+#iconBox {
+  display: flex;
+  padding-top: 10px;
+  font-size: 50px;
+  line-height: 50px;
+  color: white;
+}
+
+#tempBox {
+  display: flex;
+  font-size: 60px;
+  line-height: 60px;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  margin-left: 20px;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/inter/Inter-VariableFont.ttf") format("truetype");
+  font-weight: 1 999; /* Specifies the font weight range */
+  font-style: normal;
+}

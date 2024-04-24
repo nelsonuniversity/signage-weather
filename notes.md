@@ -1,5 +1,7 @@
 https://open-meteo.com/en/docs#current=temperature_2m,weather_code&hourly=&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=1
 
+https://open-meteo.com/en/docs#current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&forecast_days=1
+
 ```
 {"latitude":32.409317,"longitude":-96.838745,"generationtime_ms":0.0680685043334961,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":194.0,"current_units":{"time":"iso8601","interval":"seconds","temperature_2m":"°F","weather_code":"wmo code"},"current":{"time":"2024-04-23T21:45","interval":900,"temperature_2m":71.7,"weather_code":1}}
 ```
@@ -21,9 +23,3 @@ https://open-meteo.com/en/docs#current=temperature_2m,weather_code&hourly=&tempe
 | 85, 86     | Snow showers slight and heavy                    |
 | 95 \*      | Thunderstorm: Slight or moderate                 |
 | 96, 99 \*  | Thunderstorm with slight and heavy hail          |
-
-For converting codes to icons, this might help
-
-https://weatherups.vercel.app/
-
-https://github.com/bhendi-boi/WeatherUps/blob/main/src/helpers/getIcon.tsx
