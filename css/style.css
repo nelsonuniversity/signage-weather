@@ -6,22 +6,24 @@ body {
 
 .flexbox {
   display: flex;
-  align-items: flex-start;
-  max-height: 70px;
+  justify-content: flex-end;
+  align-items: flex-end;
+  max-height: 100px;
+  margin-top: 20px;
 }
 
 #iconBox {
   display: flex;
   padding-top: 10px;
-  font-size: 50px;
-  line-height: 50px;
+  font-size: 80px;
+  line-height: 100px;
   color: white;
 }
 
 #tempBox {
   display: flex;
-  font-size: 60px;
-  line-height: 60px;
+  font-size: 100px;
+  line-height: 100px;
   font-family: Inter, sans-serif;
   font-weight: 600;
   margin-left: 20px;
