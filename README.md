@@ -6,17 +6,14 @@ Go to <https://nelsonuniversity.github.io/signage-weather> to see it.
 
 ### Icons
 
-Weather icons were takne from [Erik Flowers](https://erikflowers.github.io/weather-icons/).
+Weather icons were taken from [Erik Flowers](https://erikflowers.github.io/weather-icons/).
 
 ### API
 
 Weather data comes from [Open-Meteo.com](https://open-meteo.com/).
 
-Use this link to configure the data the API pulls:
+A sample of the returned JSON can be viewed in the [sample-data.json](sample-data.json) file. If you want to change what data is returned from the Open-Meteo API, [use this link to configure](https://open-meteo.com/en/docs#current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&forecast_days=1).
 
-<https://open-meteo.com/en/docs#current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&forecast_days=1>
-
-Returned JSON can be viewed in the [sample-data.json](sample-data.json) file.
 
 ### WMO Weather interpretation codes (WW)
 
