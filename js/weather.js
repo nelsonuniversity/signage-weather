@@ -37,6 +37,18 @@ function getWeatherIcon(weatherData) {
   }`;
 }
 
+function clearIcon() {
+  const iconDiv = document.getElementById("icon");
+  iconDiv ? (iconDiv.className = "") : console.error(`Icon div not found.`);
+}
+
+function clearTemp() {
+  const tempSpan = document.querySelector(".temp");
+  tempSpan
+    ? (tempSpan.textContent = ``)
+    : console.error("temp span not found.");
+}
+
 async function fetchWeatherData() {
   try {
     const response = await fetch(apiUrl);
@@ -48,17 +60,18 @@ async function fetchWeatherData() {
     return data;
   } catch (error) {
     console.error("Error fetching weather data:", error);
-    return null;
+    return "";
   }
 }
 
-async function getWeather() {
+async function updateWeather() {
   try {
     const weatherData = await fetchWeatherData();
     updateTemperature(weatherData.current.temperature_2m);
     await updateIcon(weatherData);
   } catch (error) {
     console.error("Error:", error);
+    clearIcon();
   }
 }
 
@@ -67,9 +80,14 @@ async function updateIcon(weatherData) {
     return;
   }
   const iconDiv = document.getElementById("icon");
-  iconDiv
-    ? (iconDiv.className = getWeatherIcon(weatherData))
-    : console.error(`Icon div not found.`);
+
+  if (iconDiv) {
+    iconDiv.className = getWeatherIcon(weatherData);
+  } else {
+    console.error(`Icon div not found.`);
+    clearIcon();
+    clearTemp();
+  }
 }
 
 function updateTemperature(temperature) {
@@ -79,9 +97,9 @@ function updateTemperature(temperature) {
     : console.error("temp span not found.");
 }
 
-getWeather();
+updateWeather();
 // Call the function to get weather data
-setInterval(getWeather, time);
+setInterval(updateWeather, time);
 
 // Descriptions taken from https://gist.github.com/stellasphere/9490c195ed2b53c707087c8c2db4ec0c
 const codes = {
