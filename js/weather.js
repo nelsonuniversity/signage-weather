@@ -68,7 +68,7 @@ async function updateWeather() {
   try {
     const weatherData = await fetchWeatherData();
     updateTemperature(weatherData.current.temperature_2m);
-    await updateIcon(weatherData);
+    // await updateIcon(weatherData);
   } catch (error) {
     console.error("Error:", error);
     clearIcon();
